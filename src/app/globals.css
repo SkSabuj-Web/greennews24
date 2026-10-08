@@ -45,3 +45,41 @@ a {
 body {
   overflow-x: hidden;
 }
+.breaking-track {
+  display: flex;
+  width: max-content;
+  animation: breaking-scroll 35s linear infinite;
+}
+
+.breaking-track:hover {
+  animation-play-state: paused;
+}
+
+.breaking-content {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.breaking-item {
+  display: block;
+  margin-right: 48px;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.breaking-item:hover {
+  color: #4ade80;
+}
+
+@keyframes breaking-scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}

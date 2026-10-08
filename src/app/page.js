@@ -3,18 +3,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
 
-const categories = [
-  "সর্বশেষ",
-  "বাংলাদেশ",
-  "রাজনীতি",
-  "বিশ্ব",
-  "অর্থনীতি",
-  "খেলা",
-  "প্রযুক্তি",
-  "স্বাস্থ্য",
-  "বিনোদন",
-];
-
 function formatDate(date) {
   if (!date) return "";
 
@@ -25,12 +13,30 @@ function formatDate(date) {
   }).format(new Date(date));
 }
 
+function getDescription(description) {
+  if (typeof description === "string") {
+    return description;
+  }
+
+  if (description?.blocks) {
+    const text = description.blocks
+      .map((block) => {
+        return block?.model?.blocks?.[0]?.model?.text || "";
+      })
+      .filter(Boolean)
+      .join(" ");
+
+    return text;
+  }
+
+  return "";
+}
 
 function NewsCard({ news }) {
   return (
     <Link
       href={`/article/${news.id}`}
-      className="group block overflow-hidden border border-slate-200 bg-white transition-shadow hover:shadow-lg"
+      className="group block overflow-hidden border border-slate-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
     >
       <div className="h-52 overflow-hidden bg-slate-100">
         {news.imageUrl ? (
@@ -47,28 +53,29 @@ function NewsCard({ news }) {
       </div>
 
       <div className="p-5">
-        <span className="text-xs font-bold text-green-600">
-          {news.category}
-        </span>
+        {news.category && (
+          <span className="text-xs font-bold text-green-600">
+            {news.category}
+          </span>
+        )}
 
-        <h3 className="mt-2 text-lg font-bold leading-snug transition-colors group-hover:text-green-600">
+        <h3 className="mt-2 line-clamp-3 text-lg font-bold leading-snug text-slate-900 transition-colors group-hover:text-green-600">
           {news.title}
         </h3>
 
-        {news.description && (
-          <p className="mt-3 line-clamp-2 text-sm text-slate-500">
-            {news.description}
+        {getDescription(news.description) && (
+          <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-500">
+            {getDescription(news.description)}
           </p>
         )}
 
-        <div className="mt-4 text-xs text-slate-400">
+        <p className="mt-4 text-xs text-slate-400">
           {formatDate(news.firstPublished)}
-        </div>
+        </p>
       </div>
     </Link>
   );
 }
-
 
 async function getMostRead() {
   try {
@@ -79,7 +86,9 @@ async function getMostRead() {
       }
     );
 
-    if (!res.ok) throw new Error("Failed to fetch most read");
+    if (!res.ok) {
+      throw new Error("Failed to fetch most read");
+    }
 
     const result = await res.json();
 
@@ -94,7 +103,6 @@ export default async function Home() {
   const news = await getNews(12);
   const mostRead = await getMostRead();
 
-
   const featured = news[0];
   const sideNews = news.slice(1, 4);
   const latestNews = news.slice(4);
@@ -104,17 +112,39 @@ export default async function Home() {
       <Navbar />
 
       {/* Breaking News */}
-      <div className="bg-slate-900 text-white">
-        <div className="mx-auto flex h-11 max-w-7xl items-center gap-4 px-4">
-          <span className="bg-green-600 px-3 py-1 text-xs font-bold whitespace-nowrap">
-            সর্বশেষ
-          </span>
+      {/* Breaking News */}
+<div className="overflow-hidden bg-slate-900 text-white">
+  <div className="mx-auto flex h-11 max-w-7xl items-center px-4">
+    <span className="z-10 shrink-0 bg-green-600 px-3 py-1 text-xs font-bold">
+      সর্বশেষ
+    </span>
 
-          <p className="truncate text-sm">
-            GreenNews24 — সর্বশেষ সংবাদ এক জায়গায়
-          </p>
-        </div>
+    <div className="min-w-0 flex-1 overflow-hidden">
+      <div className="breaking-news-track flex w-max items-center">
+        {news.slice(0, 10).map((item) => (
+          <Link
+            key={item.id}
+            href={`/article/${item.id}`}
+            className="mx-6 whitespace-nowrap text-sm font-medium transition-colors hover:text-green-400"
+          >
+            {item.title}
+          </Link>
+        ))}
+
+        {/* Duplicate for continuous scrolling */}
+        {news.slice(0, 10).map((item) => (
+          <Link
+            key={`duplicate-${item.id}`}
+            href={`/article/${item.id}`}
+            className="mx-6 whitespace-nowrap text-sm font-medium transition-colors hover:text-green-400"
+          >
+            {item.title}
+          </Link>
+        ))}
       </div>
+    </div>
+  </div>
+</div>
 
       {/* Hero Section */}
       <section className="mx-auto max-w-7xl px-4 py-8">
@@ -132,7 +162,10 @@ export default async function Home() {
           <div className="grid gap-6 lg:grid-cols-3">
             {/* Featured News */}
             {featured && (
-              <article className="group overflow-hidden border border-slate-200 bg-white lg:col-span-2">
+              <Link
+                href={`/article/${featured.id}`}
+                className="group block overflow-hidden border border-slate-200 bg-white lg:col-span-2"
+              >
                 <div className="h-[380px] overflow-hidden bg-slate-100">
                   {featured.imageUrl ? (
                     <img
@@ -148,17 +181,19 @@ export default async function Home() {
                 </div>
 
                 <div className="p-6">
-                  <span className="text-sm font-bold text-green-600">
-                    {featured.category}
-                  </span>
+                  {featured.category && (
+                    <span className="text-sm font-bold text-green-600">
+                      {featured.category}
+                    </span>
+                  )}
 
-                  <h1 className="mt-2 text-2xl font-black leading-tight sm:text-3xl">
+                  <h1 className="mt-2 text-2xl font-black leading-tight text-slate-900 transition-colors group-hover:text-green-600 sm:text-3xl">
                     {featured.title}
                   </h1>
 
-                  {featured.description && (
+                  {getDescription(featured.description) && (
                     <p className="mt-3 line-clamp-2 text-slate-500">
-                      {featured.description}
+                      {getDescription(featured.description)}
                     </p>
                   )}
 
@@ -166,15 +201,16 @@ export default async function Home() {
                     {formatDate(featured.firstPublished)}
                   </p>
                 </div>
-              </article>
+              </Link>
             )}
 
             {/* Side News */}
             <div className="space-y-4">
               {sideNews.map((item) => (
-                <article
+                <Link
+                  href={`/article/${item.id}`}
                   key={item.id}
-                  className="group flex gap-4 border border-slate-200 bg-white p-4"
+                  className="group flex gap-4 border border-slate-200 bg-white p-4 transition-all hover:shadow-md"
                 >
                   <div className="h-24 w-28 shrink-0 overflow-hidden bg-slate-100">
                     {item.imageUrl ? (
@@ -190,16 +226,18 @@ export default async function Home() {
                     )}
                   </div>
 
-                  <div>
-                    <span className="text-xs font-bold text-green-600">
-                      {item.category}
-                    </span>
+                  <div className="min-w-0">
+                    {item.category && (
+                      <span className="text-xs font-bold text-green-600">
+                        {item.category}
+                      </span>
+                    )}
 
-                    <h2 className="mt-1 line-clamp-3 text-sm font-bold leading-snug group-hover:text-green-600">
+                    <h2 className="mt-1 line-clamp-3 text-sm font-bold leading-snug text-slate-900 transition-colors group-hover:text-green-600">
                       {item.title}
                     </h2>
                   </div>
-                </article>
+                </Link>
               ))}
             </div>
           </div>
@@ -208,32 +246,33 @@ export default async function Home() {
 
       {/* Latest News */}
       {latestNews.length > 0 && (
-        
-<section className="mx-auto max-w-7xl px-4 pb-12">
-  <div className="mb-6 flex items-center justify-between border-b border-slate-300 pb-3">
-    <h2 className="text-2xl font-black">সর্বশেষ সংবাদ</h2>
+        <section className="mx-auto max-w-7xl px-4 pb-12">
+          <div className="mb-6 flex items-center justify-between border-b border-slate-300 pb-3">
+            <h2 className="text-2xl font-black text-slate-900">
+              সর্বশেষ সংবাদ
+            </h2>
 
-    <Link
-      href="/category/latest"
-      className="text-sm font-bold text-green-600 transition-colors hover:text-green-700"
-    >
-      সব দেখুন →
-    </Link>
-  </div>
+            <Link
+              href="/category/bengali"
+              className="text-sm font-bold text-green-600 transition-colors hover:text-green-700"
+            >
+              সব দেখুন →
+            </Link>
+          </div>
 
-  <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-    {latestNews.map((item) => (
-      <NewsCard key={item.id} news={item} />
-    ))}
-  </div>
-</section>
-
-
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {latestNews.map((item) => (
+              <NewsCard key={item.id} news={item} />
+            ))}
+          </div>
+        </section>
       )}
+
+      {/* Most Read */}
       {mostRead.length > 0 && (
         <section className="mx-auto max-w-7xl px-4 pb-12">
           <div className="mb-6 border-b border-slate-300 pb-3">
-            <h2 className="text-2xl font-black">
+            <h2 className="text-2xl font-black text-slate-900">
               সর্বাধিক পঠিত
             </h2>
           </div>
@@ -243,18 +282,20 @@ export default async function Home() {
               <Link
                 href={`/article/${item.id}`}
                 key={item.id}
-                className="group flex gap-4 border border-slate-200 bg-white p-4 hover:shadow-md"
+                className="group flex gap-4 border border-slate-200 bg-white p-4 transition-all hover:-translate-y-0.5 hover:shadow-md"
               >
-                <span className="text-3xl font-black text-green-600">
+                <span className="shrink-0 text-3xl font-black text-green-600">
                   {String(index + 1).padStart(2, "0")}
                 </span>
 
-                <div>
-                  <span className="text-xs font-bold text-green-600">
-                    {item.category}
-                  </span>
+                <div className="min-w-0">
+                  {item.category && (
+                    <span className="text-xs font-bold text-green-600">
+                      {item.category}
+                    </span>
+                  )}
 
-                  <h3 className="mt-1 font-bold leading-snug group-hover:text-green-600">
+                  <h3 className="mt-1 font-bold leading-snug text-slate-900 transition-colors group-hover:text-green-600">
                     {item.title}
                   </h3>
                 </div>
@@ -264,7 +305,6 @@ export default async function Home() {
         </section>
       )}
 
-      {/* Footer */}
       <Footer />
     </main>
   );
