@@ -28,6 +28,7 @@ a {
 button {
   cursor: pointer;
 }
+
 ::selection {
   background: #16a34a;
   color: white;
@@ -45,11 +46,14 @@ a {
 body {
   overflow-x: hidden;
 }
+
 .breaking-news-track {
   display: flex;
   width: max-content;
+  min-width: max-content;
   align-items: center;
-  animation: breaking-news-scroll 30s linear infinite;
+  animation: breaking-news-scroll 40s linear infinite;
+  will-change: transform;
 }
 
 .breaking-news-track:hover {
@@ -57,11 +61,11 @@ body {
 }
 
 @keyframes breaking-news-scroll {
-  0% {
-    transform: translateX(0);
+  from {
+    transform: translate3d(0, 0, 0);
   }
 
-  100% {
-    transform: translateX(-50%);
+  to {
+    transform: translate3d(-50%, 0, 0);
   }
 }

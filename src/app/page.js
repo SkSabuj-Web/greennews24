@@ -2,7 +2,7 @@ import { getNews } from "@/lib/api";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
-import BreakingNews from "@/components/BreakingNews";
+
 
 function formatDate(date) {
   if (!date) return "";
