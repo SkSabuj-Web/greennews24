@@ -45,41 +45,23 @@ a {
 body {
   overflow-x: hidden;
 }
-.breaking-track {
+.breaking-news-track {
   display: flex;
   width: max-content;
-  animation: breaking-scroll 35s linear infinite;
+  align-items: center;
+  animation: breaking-news-scroll 30s linear infinite;
 }
 
-.breaking-track:hover {
+.breaking-news-track:hover {
   animation-play-state: paused;
 }
 
-.breaking-content {
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-}
-
-.breaking-item {
-  display: block;
-  margin-right: 48px;
-  white-space: nowrap;
-  font-size: 14px;
-  font-weight: 500;
-  transition: color 0.2s ease;
-}
-
-.breaking-item:hover {
-  color: #4ade80;
-}
-
-@keyframes breaking-scroll {
-  from {
+@keyframes breaking-news-scroll {
+  0% {
     transform: translateX(0);
   }
 
-  to {
+  100% {
     transform: translateX(-50%);
   }
 }

@@ -2,6 +2,7 @@ import { getNews } from "@/lib/api";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
+import BreakingNews from "@/components/BreakingNews";
 
 function formatDate(date) {
   if (!date) return "";
@@ -113,38 +114,38 @@ export default async function Home() {
 
       {/* Breaking News */}
       {/* Breaking News */}
-<div className="overflow-hidden bg-slate-900 text-white">
-  <div className="mx-auto flex h-11 max-w-7xl items-center px-4">
-    <span className="z-10 shrink-0 bg-green-600 px-3 py-1 text-xs font-bold">
-      সর্বশেষ
-    </span>
+      <div className="overflow-hidden bg-slate-900 text-white">
+        <div className="mx-auto flex h-11 max-w-7xl items-center px-4">
+          <span className="z-10 shrink-0 bg-green-600 px-3 py-1 text-xs font-bold">
+            সর্বশেষ
+          </span>
 
-    <div className="min-w-0 flex-1 overflow-hidden">
-      <div className="breaking-news-track flex w-max items-center">
-        {news.slice(0, 10).map((item) => (
-          <Link
-            key={item.id}
-            href={`/article/${item.id}`}
-            className="mx-6 whitespace-nowrap text-sm font-medium transition-colors hover:text-green-400"
-          >
-            {item.title}
-          </Link>
-        ))}
+          <div className="min-w-0 flex-1 overflow-hidden">
+            <div className="breaking-news-track flex w-max items-center">
+              {news.slice(0, 10).map((item) => (
+                <Link
+                  key={item.id}
+                  href={`/article/${item.id}`}
+                  className="mx-6 whitespace-nowrap text-sm font-medium transition-colors hover:text-green-400"
+                >
+                  {item.title}
+                </Link>
+              ))}
 
-        {/* Duplicate for continuous scrolling */}
-        {news.slice(0, 10).map((item) => (
-          <Link
-            key={`duplicate-${item.id}`}
-            href={`/article/${item.id}`}
-            className="mx-6 whitespace-nowrap text-sm font-medium transition-colors hover:text-green-400"
-          >
-            {item.title}
-          </Link>
-        ))}
+              {/* Duplicate for continuous scrolling */}
+              {news.slice(0, 10).map((item) => (
+                <Link
+                  key={`duplicate-${item.id}`}
+                  href={`/article/${item.id}`}
+                  className="mx-6 whitespace-nowrap text-sm font-medium transition-colors hover:text-green-400"
+                >
+                  {item.title}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</div>
 
       {/* Hero Section */}
       <section className="mx-auto max-w-7xl px-4 py-8">
